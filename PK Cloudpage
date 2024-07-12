@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Information Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 15px;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="tel"],
+            input[type="number"] {
+                padding: 8px;
+            }
+
+            input[type="submit"] {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+  
+
+  
+  
+  
+  <script runat="server" type="text/javascript">
+Platform.Load("core","1"); 
+try {
+</script>
+%%[
+    set @subkey = RequestParameter('subscriber')
+    set @display = 'block'
+    set @thankyou = 'none'
+    
+
+  IF RequestParameter('Submit') == 'Submit' THEN
+     set @companyName = RequestParameter('companyName')
+     
+     set @contactName = RequestParameter('contactName')
+     set @contactEmail = RequestParameter('contactEmail')
+     set @contactPhone = RequestParameter('contactPhone')
+     set @parentOrganization = IIF(RequestParameter('parentOrganization') == 'No', 'false', 'true')
+     set @parentOrgName = RequestParameter('parentOrgName')
+     set @lightDuty = RequestParameter('lightDuty')
+     set @mediumDuty = RequestParameter('mediumDuty')
+     set @heavyDuty = RequestParameter('heavyDuty')
+     set @california = RequestParameter('california')
+     set @oregon = RequestParameter('oregon')
+     set @washington = RequestParameter('washington')
+     set @nevada = RequestParameter('nevada')
+     set @trucksAccount = RequestParameter('trucksAccount')
+     
+     set @truckType = RequestParameter('truckType')
+     set @truckClass = RequestParameter('truckClass')
+     set @purchaseTimeframe = RequestParameter('purchaseTimeframe')
+     
+     set @leasingInterest = RequestParameter('leasingInterest')
+     set @grantFunding = RequestParameter('grantFunding')
+     set @infrastructureFunding = RequestParameter('infrastructureFunding')
+     set @contactID = RequestParameter('contactID')
+     
+  
+     set @display = 'none'
+     set @thankyou = 'block'
+     
+     
+  ENDIF
+ ]%%
+ 
+<script type="text/javascript" runat="server">
+  
+  var contactId = Variable.GetValue("@contactID");
+  
+  
+  
+  
+  if(contactId != '' || contactId != null)
+  {
+  
+     
+      
+      var authEndpoint = 'xxxxxxxx';  // auth endpoint url
+      var payload = {
+                client_id: "5mqyka51kclpnpejm1accdp1", // client id
+                client_secret: "KYZ5GzwWTWuobjWIgzRwkOgj", // client secret
+                grant_type: "client_credentials"
+                  };
+     var url = "https://mcz11h197w27f72rj222x-w7-928.auth.marketingcloudapis.com/" + "v2/token";  
+     var contentType = 'application/json';
+
+   
+         var accessTokenRequest = HTTP.Post(url, contentType, Stringify(payload));
+         if(accessTokenRequest.StatusCode == 200) {
+        var tokenResponse = Platform.Function.ParseJSON(accessTokenRequest.Response[0]);
+        var accessToken = tokenResponse.access_token;
+         
+           
+           
+           var config = {
+                        url : "https://mcz11h197w27f72rj222x-w7-928.rest.marketingcloudapis.com/" +"interaction/v1/events",
+                        contentType : "application/json",
+                        headerName : ["Authorization"],
+                        headerValue : ["Bearer " + accessToken],
+        payload : {
+            "ContactKey": Variable.GetValue("@contactID"),
+            "EventDefinitionKey": "APIEvent-4f29208b-a062-851c-9203-eb6841bdefa2", // API event
+            "Data": {
+              
+              "ContactId": Variable.GetValue("@contactID"),
+              "Company Name" : Variable.GetValue("@companyName"),
+              "Contact Name" : Variable.GetValue("@contactName"),
+              "Contact Email" : Variable.GetValue("@contactEmail"),
+              "Contact Phone" : Variable.GetValue("@contactPhone"),
+              "Parent Org" : Variable.GetValue("@parentOrganization"),
+              "Parent Org List" : Variable.GetValue("@parentOrgName"),
+              "Light Duty Fleet" : Variable.GetValue("@lightDuty"),
+              "Medium Duty Fleet" : Variable.GetValue("@mediumDuty"),
+              "Heavy Duty Fleet" : Variable.GetValue("@heavyDuty"),
+              "California Percent" : Variable.GetValue("@california"),
+              "Oregon Percent" : Variable.GetValue("@oregon"),
+              "Washington Percent" : Variable.GetValue("@washington"),
+              "Nevada Percent" : Variable.GetValue("@nevada"),
+              "California fleets truck account" : Variable.GetValue("@trucksAccount"),
+              "Truck considering Purchase" : Variable.GetValue("@truckType"),
+              "Truck Class" : Variable.GetValue("@truckClass"),
+              "Purchase Timeframe" : Variable.GetValue("@purchaseTimeframe"),
+              "Interested Leasing EV" : Variable.GetValue("@leasingInterest"),
+              "Applied for Grant" : Variable.GetValue("@grantFunding"),
+              "Interested in EV Hydrogen Fuel Station" : Variable.GetValue("@infrastructureFunding")
+              
+              
+              
+             
+            
+            }
+        }
+    }
+           
+     
+         
+    var req = HTTP.Post(config.url, config.contentType, Stringify(config.payload), config.headerName, config.headerValue);
+
+    if (req.StatusCode == 201) {
+        var res = Platform.Function.ParseJSON(req["Response"][0]);
+      
+        if (res.eventInstanceId != null && res.eventInstanceId != "") return true;
+    } 
+        
+     }
+  
+  
+  
+  }
+  
+}
+catch (e) {
+
+  
+}
+</script>  
+  
+  
+  
+  
+<body>
+    <div style="display: %%=v(@thankyou)=%%;">
+      Thank You
+
+      
+    </div>
+  <div style="display: %%=v(@display)=%%;">
+    
+    
+    <form action="%%=RequestParameter('PAGEURL')=%%" method="post">
+        <h2>Required Information</h2>
+      
+        
+      
+       <input type='hidden' name='contactID' value='%%=v(@subkey)=%%'>
+        <label for="companyName">Company Name:</label>
+        <input type="text" id="companyName" name="companyName" ><br><br>
+
+        <label for="contactName">Contact Name:</label>
+        <input type="text" id="contactName" name="contactName" ><br><br>
+
+        <label for="contactEmail">Contact Email:</label>
+        <input type="email" id="contactEmail" name="contactEmail" ><br><br>
+
+        <label for="contactPhone">Contact Phone:</label>
+        <input type="tel" id="contactPhone" name="contactPhone" ><br><br>
+
+      <h2>Additional Information</h2> <br><br>
+     
+        <label for="parentOrganization">Does the company have a parent organization?</label><br>
+        <input type="radio" id="parentYes" name="parentOrganization" value="Yes">
+        <label for="parentYes">Yes</label>
+        <input type="radio" id="parentNo" name="parentOrganization" value="No">
+        <label for="parentNo">No</label><br><br>
+
+        <label for="parentOrgName">If so, please list:</label>
+        <input type="text" id="parentOrgName" name="parentOrgName"><br><br>
+
+        <label>Number of vehicles in your fleet:</label><br>
+        <label for="lightDuty">Estimated number of light duty:</label>
+        <input type="number" id="lightDuty" name="lightDuty"><br><br>
+
+        <label for="mediumDuty">Estimated number of medium duty:</label>
+        <input type="number" id="mediumDuty" name="mediumDuty"><br><br>
+
+        <label for="heavyDuty">Estimated number of heavy duty:</label>
+        <input type="number" id="heavyDuty" name="heavyDuty"><br><br>
+
+        <label>What percentage of time do your trucks spend in:</label><br>
+        <label for="california">California:</label>
+        <input type="text" id="california" name="california" ><br><br>
+
+        <label for="oregon">Oregon:</label>
+        <input type="text" id="oregon" name="oregon" ><br><br>
+
+        <label for="washington">Washington:</label>
+        <input type="text" id="washington" name="washington" ><br><br>
+
+        <label for="nevada">Nevada:</label>
+        <input type="text" id="nevada" name="nevada" ><br><br>
+
+        <label>For California fleets, do you have an account setup in TRUCKS?</label><br>
+        <input type="radio" id="trucksYes" name="trucksAccount" value="Yes">
+        <label for="trucksYes">Yes</label>
+        <input type="radio" id="trucksNo" name="trucksAccount" value="No">
+        <label for="trucksNo">No</label><br><br>
+
+        <label>Which trucks are you considering?</label><br>
+        <input type="checkbox" id="batteryElectric" name="truckType" value="Battery Electric">
+        <label for="batteryElectric">Battery Electric</label>
+        <input type="checkbox" id="hydrogenFuelCell" name="truckType" value="Hydrogen Fuel Cell">
+        <label for="hydrogenFuelCell">Hydrogen Fuel Cell</label><br><br>
+
+        <label>Which truck classes are you considering?</label><br>
+        <input type="checkbox" id="class6" name="truckClass" value="Class 6">
+        <label for="class6">Class 6</label>
+        <input type="checkbox" id="class7" name="truckClass" value="Class 7">
+        <label for="class7">Class 7</label>
+        <input type="checkbox" id="class8" name="truckClass" value="Class 8">
+        <label for="class8">Class 8</label>
+        <input type="checkbox" id="class9" name="truckClass" value="Class 9">
+        <label for="class9">Class 9</label><br><br>
+
+        <label>In what timeframe are you looking to purchase?</label><br>
+        <input type="radio" id="immediately" name="purchaseTimeframe" value="Immediately">
+        <label for="immediately">Immediately</label>
+        <input type="radio" id="within3Months" name="purchaseTimeframe" value="Within 3 months">
+        <label for="within3Months">Within 3 months</label>
+        <input type="radio" id="within3to6Months" name="purchaseTimeframe" value="Within 3 - 6 months">
+        <label for="within3to6Months">Within 3 - 6 months</label>
+        <input type="radio" id="moreThan6Months" name="purchaseTimeframe" value="6 months or more">
+        <label for="moreThan6Months">6 months or more</label><br><br>
+
+        <label>Are you interested in leasing an EV truck?</label><br>
+        <input type="radio" id="leasingYes" name="leasingInterest" value="Yes">
+        <label for="leasingYes">Yes</label>
+        <input type="radio" id="leasingNo" name="leasingInterest" value="No">
+        <label for="leasingNo">No</label><br><br>
+
+        <label>Have you applied for grant funding in the past for medium/heavy duty truck purchases?</label><br>
+        <input type="radio" id="grantFundingYes" name="grantFunding" value="Yes">
+        <label for="grantFundingYes">Yes</label>
+        <input type="radio" id="grantFundingNo" name="grantFunding" value="No">
+        <label for="grantFundingNo">No</label><br><br>
+
+        <label>Are you interested in funding for EV charging or hydrogen fueling infrastructure?</label><br>
+        <input type="radio" id="infrastructureFundingYes" name="infrastructureFunding" value="Yes">
+        <label for="infrastructureFundingYes">Yes</label>
+        <input type="radio" id="infrastructureFundingNo" name="infrastructureFunding" value="No">
+        <label for="infrastructureFundingNo">No</label><br><br>
+
+        <input type="submit" name = "Submit" value="Submit">
+    </form>  
+    </div>
+</body>
+</html>
